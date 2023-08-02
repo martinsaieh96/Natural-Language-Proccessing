@@ -1,11 +1,14 @@
 import streamlit as st
 from dotenv import load_dotenv
+from htmlTemplates import css
 from utils import *
 
 def main():
     load_dotenv()
     st.set_page_config(page_title="Chatea con tus Documentos",
                        page_icon=":books:")
+    
+    st.write(css, unsafe_allow_html=True)
 
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
