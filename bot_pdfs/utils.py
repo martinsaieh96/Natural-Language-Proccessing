@@ -1,6 +1,5 @@
 from PyPDF2 import PdfReader
 import streamlit as st
-from htmlTemplates import css, bot_template, user_template
 
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma
@@ -54,11 +53,3 @@ def get_conversation_chain(vectorstore):
 def handle_userinput(user_question):
     response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
-
-    for i, message in enumerate(st.session_state.chat_history):
-        if i % 2 == 0:
-            st.write(user_template.replace(
-                "{{MSG}}", message.content), unsafe_allow_html=True)
-        else:
-            st.write(bot_template.replace(
-                "{{MSG}}", message.content), unsafe_allow_html=True)
