@@ -1,6 +1,6 @@
 import streamlit as st
 from dotenv import load_dotenv
-from bot_pdfs.utils import *
+from utils import *
 
 def main():
     load_dotenv()
