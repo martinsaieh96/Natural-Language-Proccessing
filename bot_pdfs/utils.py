@@ -6,8 +6,18 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import FAISS
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from langchain.llms import HuggingFaceHub
+from langchain.llms import HuggingFaceHub, CTransformers
 from langchain.embeddings import HuggingFaceInstructEmbeddings
+
+def load_llm():
+    # Load the locally downloaded model here
+    llm = CTransformers(
+        model = "llama-2-7b-chat.ggmlv3.q8_0.bin",
+        model_type="llama",
+        max_new_tokens = 512,
+        temperature = 0.5
+    )
+    return llm
 
 
 def get_pdf_text(pdf_docs):
@@ -32,17 +42,19 @@ def get_text_chunks(text):
 
 def get_vectorstore(text_chunks):
     #embeddings = OpenAIEmbeddings()
-    embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
+    embeddings = HuggingFaceInstructEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
 
 def get_conversation_chain(vectorstore):
 
-    llm = HuggingFaceHub(repo_id="togethercomputer/LLaMA-2-7B-32K", model_kwargs={"temperature":0.5, "max_length":512})
+    #llm = HuggingFaceHub(repo_id="meta-llama/Llama-2-7b-chat-hf", model_kwargs={"temperature":0.2, "max_length":512})
+    llm = load_llm()
 
     memory = ConversationBufferMemory(
         memory_key='chat_history', return_messages=True)
+    
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=vectorstore.as_retriever(),
